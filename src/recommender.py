@@ -75,28 +75,34 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
     Required by recommend_songs() and src/main.py
 
     Returns (score, reasons) where:
-      score   — float, max 4.0 (genre 2.0 + mood 1.0 + energy 1.0)
+      score   — float, max 4.0 (genre 1.0 + mood 1.0 + energy 2.0)
       reasons — list of strings explaining what contributed to the score
+
+    EXPERIMENT — Weight Shift:
+      Energy weight doubled (1.0 → 2.0); genre weight halved (2.0 → 1.0).
+      Max score unchanged at 4.0, so comparisons across runs remain valid.
+      Hypothesis: rankings should favour songs whose energy closely matches
+      the user's target even when the genre differs.
     """
     score = 0.0
     reasons = []
 
-    # Genre match: +2.0 (strongest signal — structural property of the music)
+    # Genre match: +1.0 (halved — EXPERIMENT: reduced from 2.0)
     if song["genre"] == user_prefs["favorite_genre"]:
-        score += 2.0
-        reasons.append(f"genre match: {song['genre']} (+2.0)")
+        score += 1.0
+        reasons.append(f"genre match: {song['genre']} (+1.0)")
     else:
         reasons.append(f"genre mismatch: {song['genre']} vs {user_prefs['favorite_genre']} (+0.0)")
 
-    # Mood match: +1.0 (contextual intent signal)
+    # Mood match: +1.0 (contextual intent signal — unchanged)
     if song["mood"] == user_prefs["favorite_mood"]:
         score += 1.0
         reasons.append(f"mood match: {song['mood']} (+1.0)")
     else:
         reasons.append(f"mood mismatch: {song['mood']} vs {user_prefs['favorite_mood']} (+0.0)")
 
-    # Energy similarity: 0.0–1.0 (continuous — rewards proximity to target)
-    energy_score = 1.0 - abs(song["energy"] - user_prefs["target_energy"])
+    # Energy similarity: 0.0–2.0 (doubled — EXPERIMENT: increased from 1.0)
+    energy_score = (1.0 - abs(song["energy"] - user_prefs["target_energy"])) * 2.0
     score += energy_score
     reasons.append(
         f"energy {song['energy']:.2f} vs target {user_prefs['target_energy']:.2f} "

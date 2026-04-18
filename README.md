@@ -212,10 +212,21 @@ Read and complete `model_card.md`:
 
 [**Model Card**](model_card.md)
 
-Write 1 to 2 paragraphs here about what you learned:
+A recommender does not understand music. It turns song attributes into numbers, adds
+them up, and returns the highest totals. What surprised me is how often that is enough
+to feel right. When the catalog has good coverage of a user's taste, three lines of
+math can produce a playlist that looks exactly like something Spotify would generate.
+When the catalog does not have that coverage, the same three lines produce results
+that feel completely off — reggae recommended to a jazz fan, metal recommended to an
+EDM fan. The algorithm did not change; the data did.
 
-- about how recommenders turn data into predictions
-- about where bias or unfairness could show up in systems like this
+Bias showed up in ways I did not expect. The catalog was not designed to favor any
+group, but because lofi had three entries and most other genres had one, lofi users
+got better recommendations than jazz or folk users by default. That is a real pattern
+in production systems too — content that is well-represented in the training data gets
+recommended more, which makes it more popular, which adds more data, which makes it
+get recommended even more. You can see the whole feedback loop in miniature just by
+looking at an 18-song CSV.
 
 
 ---
